@@ -7,7 +7,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from .safety import SandboxError, effective_denylist, ensure_file_size, is_command_allowed, resolve_path
+from .safety import (
+    SandboxError,
+    ensure_file_size,
+    is_command_allowed,
+    resolve_path,
+)
 
 MAX_READ_BYTES = 2 * 1024 * 1024
 MAX_SEARCH_RESULTS = 200
@@ -31,10 +36,10 @@ def _get_target(root: Path, path: str | None, cwd: Path | None) -> Path:
     """Helper to resolve path relative to CWD if provided, then verify safety against root."""
     path_str = path or "."
     path_obj = Path(path_str)
-    
+
     if path_obj.is_absolute():
         return resolve_path(root, path_obj)
-    
+
     base = cwd or root
     return resolve_path(root, base / path_obj)
 
@@ -46,14 +51,14 @@ def list_dir(root: Path, path: str | None, cwd: Path | None = None) -> ToolResul
             return ToolResult(f"Path not found: {path}", is_error=True)
         if not target.is_dir():
             return ToolResult(f"Not a directory: {path}", is_error=True)
-        
+
         entries = []
         for item in sorted(target.iterdir()):
             suffix = "/" if item.is_dir() else ""
             entries.append(f"{item.name}{suffix}")
-        
+
         output = "\n".join(entries)
-        
+
         # Add a subtle hint to prevent looping if the user didn't ask for this specifically
         # This is a passive environment feature
         return ToolResult(output, metadata={"path": str(target)})
@@ -234,17 +239,17 @@ def glob_files(root: Path, pattern: str, cwd: Path | None = None) -> ToolResult:
 def run_shell(root: Path, command: str, denylist: List[str], cwd: Path | None = None) -> ToolResult:
     if not is_command_allowed(command, denylist):
         return ToolResult("Command blocked by denylist", is_error=True)
-    
+
     # Use provided CWD or fallback to root
     working_dir = cwd or root
-    
+
     # Handle "cd" commands specifically
     # Support chaining like "cd foo && pwd" or "cd foo; ls"
     clean_cmd = command.strip()
     is_cd = False
     cd_target = ""
     remaining_cmd = ""
-    
+
     if clean_cmd.startswith("cd ") or clean_cmd == "cd":
         is_cd = True
         # Split by && or ; to separate the cd portion
@@ -253,21 +258,21 @@ def run_shell(root: Path, command: str, denylist: List[str], cwd: Path | None = 
         separators = ["&&", ";"]
         first_sep_idx = -1
         sep_len = 0
-        
+
         for sep in separators:
             idx = clean_cmd.find(sep)
             if idx != -1:
                 if first_sep_idx == -1 or idx < first_sep_idx:
                     first_sep_idx = idx
                     sep_len = len(sep)
-        
+
         if first_sep_idx != -1:
             cd_part = clean_cmd[:first_sep_idx].strip()
             remaining_cmd = clean_cmd[first_sep_idx + sep_len:].strip()
         else:
             cd_part = clean_cmd
             remaining_cmd = ""
-            
+
         cmd_parts = cd_part.split()
         if len(cmd_parts) > 1:
              # Re-join to handle spaces in path if strictly cd part
@@ -275,7 +280,7 @@ def run_shell(root: Path, command: str, denylist: List[str], cwd: Path | None = 
         else:
              # "cd" alone -> root or home? Let's assume root of project for safety or stay put
              # Standard shell "cd" goes home. Here we might just stay in project root.
-             cd_target = "" 
+             cd_target = ""
 
     if is_cd:
         try:
@@ -286,18 +291,18 @@ def run_shell(root: Path, command: str, denylist: List[str], cwd: Path | None = 
             else:
                 # Handle basic relative paths
                 new_path = (working_dir / target_path).resolve()
-            
+
             if not new_path.exists():
                 return ToolResult(f"cd: no such file or directory: {target_path}", is_error=True)
             if not new_path.is_dir():
                 return ToolResult(f"cd: not a directory: {target_path}", is_error=True)
-            
+
             # Verify safety (stay within root? optional, but good for safety)
             # For a "powerful" environment, we might allow full system traversal if approved.
-            
+
             # If there is a remaining command, execute it in the NEW cwd
             output_msg = f"Changed directory to {new_path}"
-            
+
             if remaining_cmd:
                 # Recursively run the rest
                 # We can't easily recurse cleanly because we need to combine results.
@@ -313,16 +318,16 @@ def run_shell(root: Path, command: str, denylist: List[str], cwd: Path | None = 
                 )
                 rest_out = (completed.stdout or "") + (completed.stderr or "")
                 output_msg += f"\n{rest_out}"
-                
+
                 if completed.returncode != 0:
                      return ToolResult(
-                        output_msg, 
-                        is_error=True, 
+                        output_msg,
+                        is_error=True,
                         metadata={"new_cwd": str(new_path)}
                     )
 
             return ToolResult(
-                output_msg + f"\nSYSTEM ALERT: Navigation successful. You are now in {new_path}.", 
+                output_msg + f"\nSYSTEM ALERT: Navigation successful. You are now in {new_path}.",
                 metadata={"new_cwd": str(new_path)}
             )
         except Exception as e:

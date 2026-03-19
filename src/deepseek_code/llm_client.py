@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import time
-from typing import Any, Dict, List, Type, TypeVar
+from typing import Any, Dict, Type, TypeVar
 
 import httpx
 from pydantic import BaseModel, ValidationError
@@ -26,18 +26,18 @@ class LLMClient:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
-        
+
         system_prompt = (
             "You are a helpful assistant that ALWAYS returns valid JSON.\n"
             f"Your output MUST conform to this JSON Schema:\n"
             f"{json.dumps(schema.model_json_schema(), indent=2)}"
         )
-        
+
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt},
         ]
-        
+
         payload = {
             "model": self.model,
             "messages": messages,
@@ -54,7 +54,7 @@ class LLMClient:
                     response.raise_for_status()
                     data = response.json()
                     content = data["choices"][0]["message"]["content"]
-                    
+
                     # Attempt to parse and validate
                     parsed = json.loads(content)
                     # We validate here to ensure it matches the schema before returning
@@ -64,7 +64,7 @@ class LLMClient:
                 if attempt == self.max_retries - 1:
                     raise RuntimeError(f"Failed to get valid response from LLM after {self.max_retries} attempts: {e}")
                 time.sleep(2 ** attempt)
-        
+
         raise RuntimeError("Unreachable")
 
     def call_planner(self, prompt: str) -> Dict[str, Any]:

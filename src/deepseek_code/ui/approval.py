@@ -5,59 +5,59 @@ Provides a beautiful arrow-key navigation menu for tool approvals.
 
 from __future__ import annotations
 
-from typing import Optional, List, Dict, Any
+from typing import Dict, List, Optional
 
 from prompt_toolkit import Application
-from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.layout import Layout, HSplit, Window
-from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.formatted_text import FormattedText
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.layout import HSplit, Layout, Window
+from prompt_toolkit.layout.controls import FormattedTextControl
+from rich import box
 from rich.console import Console
 from rich.panel import Panel
-from rich import box
 
 
 class InteractiveMenu:
     """Generic interactive menu with arrow key navigation."""
-    
+
     def __init__(self, title: str, options: List[Dict[str, str]], console: Console):
         self.title = title
         self.options = options
         self.console = console
         self.selected_index = 0
         self.result: Optional[str] = None
-        
+
     def _create_content(self) -> FormattedText:
         lines = []
-        
+
         # Title
         lines.append(("", "\n"))
-        lines.append((("bold yellow", f"  ? {self.title}")))
+        lines.append(("bold yellow", f"  ? {self.title}"))
         lines.append(("", "\n\n"))
-        
+
         # Options
         for idx, option in enumerate(self.options):
             is_selected = idx == self.selected_index
-            
+
             if is_selected:
                 prefix = "  ❯ "
                 style = "bold cyan"
             else:
                 prefix = "    "
                 style = "white"
-                
+
             label = option["label"]
             desc = option.get("description", "")
-            
+
             lines.append((style, f"{prefix}{label}"))
             if desc and is_selected:
-                lines.append((("dim", f"  ({desc})")))
+                lines.append(("dim", f"  ({desc})"))
             lines.append(("", "\n"))
-            
+
         lines.append(("", "\n"))
-        lines.append((("dim", "  ↑/↓: Navigate  Enter: Select")))
+        lines.append(("dim", "  ↑/↓: Navigate  Enter: Select"))
         lines.append(("", "\n"))
-        
+
         return FormattedText(lines)
 
     def _create_layout(self) -> Layout:
@@ -100,16 +100,16 @@ class InteractiveMenu:
                 if idx < len(self.options):
                     self.result = self.options[idx]["value"]
                     event.app.exit()
-                    
+
         return kb
 
     def show(self) -> str:
         # 1. Capture cursor position before printing anything
-        # We can't easily capture exact position without ncurses, 
+        # We can't easily capture exact position without ncurses,
         # but prompt_toolkit Application runs in an alternate screen or inline.
         # By default application output stays.
         # We can use erase_section logic if we print manually, but app.run() handles IO.
-        
+
         app = Application(
             layout=self._create_layout(),
             key_bindings=self._create_key_bindings(),
@@ -128,7 +128,7 @@ def confirm_action(console: Console, prompt: str, context: str = "") -> str:
         {"label": "Allow Always", "value": "always", "description": "Allow for this session"},
         {"label": "Deny", "value": "deny", "description": "Skip this action"},
     ]
-    
+
     # Use a rich panel to show context BEFORE the interactive menu
     # because prompt_toolkit takes over the screen area it uses.
     if context:
@@ -151,6 +151,6 @@ def confirm_write(console: Console, path: str) -> str:
         {"label": "Edit Manually", "value": "edit", "description": "Open in editor"},
         {"label": "Deny", "value": "deny", "description": "Discard changes"},
     ]
-    
+
     menu = InteractiveMenu(f"Allow modification of {path}?", options, console)
     return menu.show()

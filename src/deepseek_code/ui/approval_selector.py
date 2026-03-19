@@ -10,16 +10,16 @@ from __future__ import annotations
 from typing import Optional
 
 from prompt_toolkit import Application
-from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.layout import Layout, HSplit, Window
-from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.formatted_text import FormattedText
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.layout import HSplit, Layout, Window
+from prompt_toolkit.layout.controls import FormattedTextControl
 from rich.console import Console
 
 
 class ApprovalModeSelector:
     """Interactive approval mode selector with keyboard navigation."""
-    
+
     MODES = [
         {
             "name": "Safe (Read Only)",
@@ -52,33 +52,33 @@ class ApprovalModeSelector:
             "details": "Can read files and search, but cannot modify anything.",
         },
     ]
-    
+
     def __init__(self, current_mode: str):
         self.current_mode = current_mode
         self.selected_index = self._get_current_index()
         self.result: Optional[str] = None
-        
+
     def _get_current_index(self) -> int:
         """Get index of current mode."""
         for idx, mode in enumerate(self.MODES):
             if mode["key"] == self.current_mode:
                 return idx
         return 1  # Default to Standard
-    
+
     def _create_content(self) -> FormattedText:
         """Create the formatted text for the modal."""
         lines = []
-        
+
         # Title
         lines.append(("", "\n"))
         lines.append(("bold", "  Select Approval Mode"))
         lines.append(("", "\n\n"))
-        
+
         # Mode list
         for idx, mode in enumerate(self.MODES):
             is_selected = idx == self.selected_index
             is_current = mode["key"] == self.current_mode
-            
+
             # Prefix
             if is_selected:
                 prefix = "  › "
@@ -86,69 +86,69 @@ class ApprovalModeSelector:
             else:
                 prefix = "    "
                 style = ""
-            
+
             # Number and name
             lines.append((style, f"{prefix}{idx + 1}. {mode['name']}"))
-            
+
             # Current indicator
             if is_current:
                 lines.append(("green", " (current)"))
-            
+
             lines.append(("", "\n"))
-            
+
             # Description (indented)
             if is_selected:
                 lines.append(("dim", f"      {mode['description']}"))
                 lines.append(("", "\n"))
                 lines.append(("dim", f"      {mode['details']}"))
                 lines.append(("", "\n"))
-        
+
         # Instructions
         lines.append(("", "\n"))
         lines.append(("dim", "  ↑/↓: Navigate  Enter: Select  Esc: Cancel  1-5: Quick select"))
         lines.append(("", "\n\n"))
-        
+
         return FormattedText(lines)
-    
+
     def _create_layout(self) -> Layout:
         """Create the layout for the modal."""
         content_control = FormattedTextControl(
             text=self._create_content,
             focusable=True,
         )
-        
+
         content_window = Window(
             content=content_control,
             wrap_lines=True,
         )
-        
+
         return Layout(HSplit([content_window]))
-    
+
     def _create_key_bindings(self) -> KeyBindings:
         """Create key bindings for navigation."""
         kb = KeyBindings()
-        
+
         @kb.add("up")
         def move_up(event):
             if self.selected_index > 0:
                 self.selected_index -= 1
-        
+
         @kb.add("down")
         def move_down(event):
             if self.selected_index < len(self.MODES) - 1:
                 self.selected_index += 1
-        
+
         @kb.add("enter")
         def select(event):
             self.result = self.MODES[self.selected_index]["key"]
             event.app.exit()
-        
+
         @kb.add("escape")
         @kb.add("c-c")
         def cancel(event):
             self.result = None
             event.app.exit()
-        
+
         # Number keys for quick selection
         for i in range(1, 6):
             @kb.add(str(i))
@@ -156,9 +156,9 @@ class ApprovalModeSelector:
                 if num <= len(self.MODES):
                     self.result = self.MODES[num - 1]["key"]
                     event.app.exit()
-        
+
         return kb
-    
+
     def show(self) -> Optional[str]:
         """Show the modal and return selected mode (or None if cancelled)."""
         app = Application(
@@ -167,7 +167,7 @@ class ApprovalModeSelector:
             full_screen=False,
             mouse_support=True,
         )
-        
+
         app.run()
         return self.result
 

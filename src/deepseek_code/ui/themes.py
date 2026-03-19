@@ -14,26 +14,26 @@ from typing import Dict, Optional
 @dataclass(frozen=True)
 class Theme:
     """Immutable theme configuration."""
-    
+
     name: str
-    
+
     # Core colors
     primary: str
     secondary: str
     accent: str
-    
+
     # Semantic colors
     success: str
     warning: str
     error: str
     info: str
-    
+
     # UI colors
     dim: str
     muted: str
     background: str
     foreground: str
-    
+
     # Component-specific
     prompt: str
     assistant: str
@@ -41,23 +41,23 @@ class Theme:
     tool_write: str
     tool_delete: str
     tool_shell: str
-    
+
     # Diff colors
     diff_add: str
     diff_remove: str
     diff_context: str
-    
+
     # Panel borders
     border_primary: str
     border_secondary: str
     border_success: str
     border_warning: str
     border_error: str
-    
+
     def to_rich_style(self, component: str) -> str:
         """Get Rich style string for a component."""
         return getattr(self, component, self.foreground)
-    
+
     def get_tool_style(self, tool_name: str) -> str:
         """Get style for a specific tool."""
         if tool_name in {"read_file", "list_dir", "search", "read_json_chunk"}:
@@ -76,7 +76,7 @@ class Theme:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 THEMES: Dict[str, Theme] = {
-    
+
     # ───────────────────────────────────────────────────────────────────────────
     # DeepSeek Default - Futuristic cyan/purple theme
     # ───────────────────────────────────────────────────────────────────────────
@@ -108,7 +108,7 @@ THEMES: Dict[str, Theme] = {
         border_warning="#FFB800",
         border_error="#FF3B6D",
     ),
-    
+
     # ───────────────────────────────────────────────────────────────────────────
     # GitHub Dark - Familiar GitHub look
     # ───────────────────────────────────────────────────────────────────────────
@@ -140,7 +140,7 @@ THEMES: Dict[str, Theme] = {
         border_warning="#D29922",
         border_error="#F85149",
     ),
-    
+
     # ───────────────────────────────────────────────────────────────────────────
     # Dracula - Popular dark theme
     # ───────────────────────────────────────────────────────────────────────────
@@ -172,7 +172,7 @@ THEMES: Dict[str, Theme] = {
         border_warning="#FFB86C",
         border_error="#FF5555",
     ),
-    
+
     # ───────────────────────────────────────────────────────────────────────────
     # Nord - Arctic, bluish color palette
     # ───────────────────────────────────────────────────────────────────────────
@@ -204,7 +204,7 @@ THEMES: Dict[str, Theme] = {
         border_warning="#EBCB8B",
         border_error="#BF616A",
     ),
-    
+
     # ───────────────────────────────────────────────────────────────────────────
     # Monokai Pro - Classic code editor theme
     # ───────────────────────────────────────────────────────────────────────────
@@ -236,7 +236,7 @@ THEMES: Dict[str, Theme] = {
         border_warning="#E6DB74",
         border_error="#F92672",
     ),
-    
+
     # ───────────────────────────────────────────────────────────────────────────
     # Tokyo Night - Elegant dark theme
     # ───────────────────────────────────────────────────────────────────────────
@@ -268,7 +268,7 @@ THEMES: Dict[str, Theme] = {
         border_warning="#E0AF68",
         border_error="#F7768E",
     ),
-    
+
     # ───────────────────────────────────────────────────────────────────────────
     # Catppuccin Mocha - Soothing pastel theme
     # ───────────────────────────────────────────────────────────────────────────
@@ -300,7 +300,7 @@ THEMES: Dict[str, Theme] = {
         border_warning="#F9E2AF",
         border_error="#F38BA8",
     ),
-    
+
     # ───────────────────────────────────────────────────────────────────────────
     # Minimal Light - Clean light theme
     # ───────────────────────────────────────────────────────────────────────────
@@ -368,17 +368,17 @@ def create_custom_theme(
 ) -> Theme:
     """Create a custom theme based on an existing one with overrides."""
     base_theme = THEMES.get(base, THEMES[DEFAULT_THEME])
-    
+
     # Get all fields from base theme
     theme_dict = {
         field: getattr(base_theme, field)
         for field in Theme.__dataclass_fields__
     }
-    
+
     # Apply overrides
     theme_dict["name"] = name
     for key, value in overrides.items():
         if key in theme_dict:
             theme_dict[key] = value
-    
+
     return Theme(**theme_dict)

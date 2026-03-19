@@ -289,21 +289,22 @@ deepseek-code/
 ├── src/deepseek_code/
 │   ├── __init__.py
 │   ├── cli.py           # Main CLI entry point
+│   ├── engine.py        # Core ReAct loop and tool orchestration
 │   ├── agent.py         # DeepSeek API agent
 │   ├── tools.py         # Tool implementations
+│   ├── orchestrator.py  # Automated multi-step task orchestrator
 │   ├── config.py        # Configuration management
 │   ├── safety.py        # Security & sandboxing
 │   ├── session.py       # Session state & backups
 │   ├── tokens.py        # Token counting
-│   ├── logging_utils.py # Conversation logging
-│   └── ui/
+│   └── ui/              # User interface components
 │       ├── themes.py    # Color themes
-│       ├── panels.py    # Rich panel components
-│       ├── animations.py # Loading states
-│       ├── approval.py  # Approval workflows
-│       └── commands.py  # Slash commands
-├── tests/
-│   └── test_comprehensive.py
+│       ├── panels.py    # Rich panel rendering
+│       ├── commands.py  # Slash command handlers
+│       └── ...
+├── docs/                # Documentation and design notes
+├── tests/               # Comprehensive test suite
+├── scripts/             # Utility and development scripts
 ├── pyproject.toml
 └── README.md
 ```

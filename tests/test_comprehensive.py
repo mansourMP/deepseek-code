@@ -189,7 +189,7 @@ class TestConfiguration:
         assert config.auto_approve is False
         assert config.mode == "standard"
         assert config.theme == "deepseek"
-        assert config.max_context_tokens == 32000
+        assert config.max_context_tokens == 64000
     
     def test_load_from_file(self, tmp_path: Path):
         from deepseek_code.config import Config

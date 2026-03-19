@@ -1,17 +1,27 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from .tools import (
-    list_dir,
-    read_file as ds_read_file,
-    write_file as ds_write_file,
-    search as ds_search,
     glob_files as ds_glob_files,
+)
+from .tools import (
+    list_dir,
+)
+from .tools import (
+    read_file as ds_read_file,
+)
+from .tools import (
     run_shell as ds_run_shell,
 )
+from .tools import (
+    search as ds_search,
+)
+from .tools import (
+    write_file as ds_write_file,
+)
+
 
 class ToolsAdapter:
     """
@@ -36,18 +46,18 @@ class ToolsAdapter:
         }
 
     def read_file(self, file_path: str, limit: int = None, offset: int = None) -> Dict[str, Any]:
-        # Note: Existing read_file doesn't support limit/offset directly, 
+        # Note: Existing read_file doesn't support limit/offset directly,
         # but we can implement it here.
         res = ds_read_file(self.root, file_path, self.cwd)
         if res.is_error:
             return {"file_path": file_path, "error": res.output}
-        
+
         content = res.output
         lines = content.splitlines()
-        
+
         start = offset or 0
         end = (start + limit) if limit is not None else len(lines)
-        
+
         chunk = "\n".join(lines[start:end])
         return {
             "file_path": file_path,
@@ -65,9 +75,9 @@ class ToolsAdapter:
         effective_pattern = re.escape(pattern) if fixed_strings else pattern
         if not case_sensitive:
             effective_pattern = f"(?i){effective_pattern}"
-            
+
         res = ds_search(self.root, effective_pattern, include or dir_path, self.cwd)
-        
+
         matches = []
         if not res.is_error and res.output != "No matches":
             for line in res.output.splitlines():
@@ -79,25 +89,25 @@ class ToolsAdapter:
                         "line": int(parts[1]),
                         "snippet": parts[2].strip()
                     })
-        
+
         return {"pattern": pattern, "matches": matches[:20], "error": res.output if res.is_error else None}
 
     def glob(self, pattern: str, dir_path: str = None) -> Dict[str, Any]:
-        # Note: ds_glob_files uses cwd or root. 
+        # Note: ds_glob_files uses cwd or root.
         # If dir_path is provided, we temporarily change context or handle it.
         search_base = Path(dir_path).resolve() if dir_path else self.cwd
         res = ds_glob_files(self.root, pattern, search_base)
-        
+
         paths = []
         if not res.is_error and res.output != "No files found":
             paths = res.output.splitlines()
-            
+
         return {"pattern": pattern, "paths": paths, "error": res.output if res.is_error else None}
 
     def write_file(self, file_path: str, content: str) -> Dict[str, Any]:
         res = ds_write_file(self.root, file_path, content, self.cwd)
         return {
-            "file_path": file_path, 
+            "file_path": file_path,
             "bytes": len(content.encode("utf-8")),
             "error": res.output if res.is_error else None
         }
@@ -105,7 +115,7 @@ class ToolsAdapter:
     def run_shell_command(self, command: str, description: str = None, dir_path: str = None) -> Dict[str, Any]:
         exec_cwd = Path(dir_path).resolve() if dir_path else self.cwd
         res = ds_run_shell(self.root, command, self.denylist, exec_cwd)
-        
+
         # If metadata has new_cwd, update our tracking (though orchestrator might manage it)
         if res.metadata.get("new_cwd"):
             self.cwd = Path(res.metadata["new_cwd"])

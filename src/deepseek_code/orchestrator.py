@@ -1,29 +1,26 @@
-#!/usr/bin/env python3
-"""
-Codex-grade terminal orchestrator.
-"""
+\"\"\"
+Autonomous multi-step task orchestrator for DeepSeek Code.
+Provides a higher-level planning and execution loop for complex goals.
+\"\"\"
 
 from __future__ import annotations
 
 import json
 import os
 import sys
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from dotenv import load_dotenv
+
+from .llm_client import LLMClient
+from .orchestrator_schemas import CoderOutput, PlannerOutput, ReviewerOutput
+from .tools_adapter import ToolsAdapter
 
 # Load env variables if .env exists
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
-
-from src.deepseek_code.tools_adapter import ToolsAdapter
-from src.deepseek_code.llm_client import LLMClient
-from src.deepseek_code.orchestrator_schemas import PlannerOutput, CoderOutput, ReviewerOutput
-from pydantic import ValidationError
+load_dotenv()
 
 # -----------------------------
 # Configuration / Guardrails
@@ -104,7 +101,7 @@ class SessionState:
         return json.dumps(d, indent=2)
 
     @staticmethod
-    def from_json(s: str) -> "SessionState":
+    def from_json(s: str) -> SessionState:
         d = json.loads(s)
         d["state"] = State(d["state"])
         if "evidence" in d:
@@ -153,7 +150,6 @@ def diff_line_count(diff: str) -> int:
 
 def extract_paths_from_diff(diff: str) -> List[str]:
     paths = []
-    import re
     for line in diff.splitlines():
         if line.startswith("+++ b/"):
             paths.append(line.replace("+++ b/", "").strip())
@@ -242,7 +238,7 @@ class Orchestrator:
         import re
         key_terms = re.findall(r"[A-Za-z_][A-Za-z0-9_]{2,}", st.goal)
         key_terms = list(dict.fromkeys(key_terms))[:10]
-        
+
         matches = []
         for term in key_terms[:3]:
             res = self.tools.search_file_content(term, dir_path=".", include="**/*.py" if st.repo_profile.language == "python" else None, context=2)
@@ -401,7 +397,7 @@ def main():
         sys.exit(1)
 
     goal = sys.argv[1]
-    
+
     api_key = os.getenv("DEEPSEEK_API_KEY")
     if not api_key:
         print("Error: DEEPSEEK_API_KEY environment variable not set.", file=sys.stderr)
@@ -409,7 +405,7 @@ def main():
 
     # Use actual root of the project
     root_path = os.getcwd()
-    
+
     tools = ToolsAdapter(root_path)
     llm = LLMClient(api_key=api_key)
     orch = Orchestrator(tools, llm)

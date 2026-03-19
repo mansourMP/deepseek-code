@@ -59,6 +59,7 @@ Changelog = "https://github.com/deepseek/deepseek-code/blob/main/CHANGELOG.md"
 [project.scripts]
 deepseek = "deepseek_code.cli:main"
 deepseek-code = "deepseek_code.cli:main"
+deepseek-auto = "deepseek_code.orchestrator:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

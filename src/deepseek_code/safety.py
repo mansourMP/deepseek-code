@@ -12,9 +12,8 @@ from __future__ import annotations
 
 import os
 import re
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, List, Set
-
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # DENYLIST - Commands and patterns that are never allowed
@@ -25,50 +24,50 @@ DEFAULT_DENYLIST = [
     "rm -rf",
     "rm -fr",
     "rmdir",
-    
+
     # Privilege escalation
     "sudo",
     "su ",
     "doas",
-    
+
     # System destructive
     "dd if=",
     "mkfs",
     "fdisk",
     "parted",
-    
+
     # Fork bombs and resource exhaustion
     ":(){ :|:& };:",
-    
+
     # Permission changes (recursive)
     "chmod -r",
     "chmod -R",
     "chown -r",
     "chown -R",
-    
+
     # Network exfiltration
     "curl.*>",
     "wget.*-O",
     "nc -e",
     "netcat",
-    
+
     # History/credential theft
     ".bash_history",
     ".zsh_history",
     ".ssh/",
     ".aws/",
     ".config/",
-    
+
     # Dangerous redirects
     "> /dev/sd",
     "> /dev/hd",
     "> /dev/null",  # Usually benign but can hide errors
-    
+
     # Process manipulation
     "kill -9",
     "killall",
     "pkill",
-    
+
     # System shutdown/reboot
     "shutdown",
     "reboot",
@@ -77,7 +76,7 @@ DEFAULT_DENYLIST = [
 ]
 
 # Directories that should never be accessed
-BLOCKED_DIRECTORIES: Set[str] = {
+BLOCKED_DIRECTORIES: set[str] = {
     ".git",
     ".svn",
     ".hg",
@@ -153,25 +152,20 @@ def resolve_path(root: Path, target: str | Path) -> Path:
     """
     root = root.resolve()
     target_path = Path(target)
-    
+
     # Handle relative and absolute paths
     if not target_path.is_absolute():
         target_path = (root / target_path).resolve()
     else:
         target_path = target_path.resolve()
-    
+
     # Verify path is within sandbox
     try:
         if target_path != root:
             target_path.relative_to(root)
     except ValueError as exc:
-        # Relaxed Check: Allow if it shares the same parent directory
-        # This handles cases like "project" vs "project org"
-        if target_path.parent == root.parent:
-            return target_path
-        
         raise PathEscapeError(f"Path escapes sandbox: {target}") from exc
-    
+
     return target_path
 
 
@@ -221,11 +215,11 @@ def is_command_allowed(command: str, denylist: Iterable[str]) -> bool:
         True if allowed, False if denied
     """
     lowered = command.lower()
-    
+
     for entry in denylist:
         if entry.lower() in lowered:
             return False
-    
+
     return True
 
 
@@ -240,29 +234,29 @@ def sanitize_command(command: str) -> str:
         (r';\s*(rm|sudo|dd|mkfs)', "Command chaining with dangerous command"),
         (r'\|\s*(rm|sudo|dd|mkfs)', "Pipe to dangerous command"),
         (r'&&\s*(rm|sudo|dd|mkfs)', "Conditional dangerous command"),
-        
+
         # Command substitution
         (r'`[^`]*`', "Backtick command substitution"),
         (r'\$\([^)]+\)', "Dollar-paren command substitution"),
-        
+
         # Reverse shells
         (r'/bin/bash\s+-i', "Interactive bash shell"),
         (r'/bin/sh\s+-i', "Interactive shell"),
         (r'bash\s+-c.*nc\s', "Netcat in bash"),
-        
+
         # Environment manipulation
         (r'export\s+PATH=', "PATH manipulation"),
         (r'export\s+LD_', "Library path manipulation"),
     ]
-    
+
     for pattern, description in dangerous_patterns:
         if re.search(pattern, command, re.IGNORECASE):
             raise CommandDeniedError(f"Dangerous pattern detected: {description}")
-    
+
     return command
 
 
-def effective_denylist(extra: List[str] | None = None) -> List[str]:
+def effective_denylist(extra: list[str] | None = None) -> list[str]:
     """
     Get the combined denylist with defaults and custom entries.
     
@@ -291,7 +285,7 @@ def ensure_file_size(path: Path, max_bytes: int) -> None:
     """
     if not path.exists():
         return
-    
+
     size = path.stat().st_size
     if size > max_bytes:
         size_mb = size / (1024 * 1024)
@@ -304,6 +298,7 @@ def ensure_file_size(path: Path, max_bytes: int) -> None:
 def check_disk_space(path: Path, required_bytes: int) -> bool:
     """Check if there's enough disk space for an operation."""
     try:
+        import os
         stat = os.statvfs(path)
         available = stat.f_frsize * stat.f_bavail
         return available > required_bytes
@@ -325,7 +320,7 @@ def check_symlink_safety(root: Path, path: Path) -> None:
     """
     if not path.is_symlink():
         return
-    
+
     # Resolve the symlink target
     try:
         target = path.resolve()
@@ -361,28 +356,28 @@ def validate_file_operation(
     """
     # Resolve and validate path
     resolved = resolve_path(root, path)
-    
+
     # Check for blocked directories
     check_path_components(resolved)
-    
+
     # Check symlink safety
     if resolved.exists():
         check_symlink_safety(root, resolved)
-    
+
     # Check sensitive files for read/write
     if operation in ("read", "write") and is_sensitive_file(resolved):
         raise SensitiveFileError(f"Cannot {operation} sensitive file: {path}")
-    
+
     # Check file size for reads
     if operation == "read" and max_size and resolved.exists():
         ensure_file_size(resolved, max_size)
-    
+
     return resolved
 
 
 def validate_shell_command(
     command: str,
-    denylist: List[str],
+    denylist: list[str],
 ) -> str:
     """
     Comprehensive validation for shell commands.
@@ -400,16 +395,39 @@ def validate_shell_command(
     # Check against denylist
     if not is_command_allowed(command, denylist):
         raise CommandDeniedError(f"Command denied by denylist: {command}")
-    
+
     # Check for injection patterns
     sanitize_command(command)
-    
+
     return command
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# PROJECT ROOT DETECTION
+# PROJECT ROOT & STATUS DETECTION
 # ═══════════════════════════════════════════════════════════════════════════════
+
+def get_git_branch(root: Path) -> str:
+    """Get the current git branch name."""
+    try:
+        import subprocess
+        result = subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=False
+        )
+        return result.stdout.strip() or "no-branch"
+    except Exception:
+        return "n/a"
+
+
+def get_trust_status(root: Path) -> str:
+    """Check if the workspace is trusted."""
+    if (root / ".env").exists() or (root / "pyproject.toml").exists():
+        return "trusted"
+    return "untrusted"
+
 
 def find_project_root(start_path: Path | None = None) -> Path:
     """
@@ -419,7 +437,7 @@ def find_project_root(start_path: Path | None = None) -> Path:
     Otherwise finds the nearest project marker.
     """
     current = (start_path or Path.cwd()).resolve()
-    
+
     # Check for .git specifically first (traverse up)
     for parent in [current] + list(current.parents):
         if (parent / ".git").exists():
@@ -436,14 +454,12 @@ def find_project_root(start_path: Path | None = None) -> Path:
         "build.gradle",
         "Makefile",
     ]
-    
+
     # Search upward through parent directories
     for parent in [current] + list(current.parents):
         for marker in root_markers:
             if (parent / marker).exists():
                 return parent
-    
+
     # No markers found, use start path
     return current
-
-

@@ -3,17 +3,17 @@ from __future__ import annotations
 import json
 import os
 import re
+import threading
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any
 
 import httpx
 from rich.console import Console
-from rich.status import Status
 
 from .logging_utils import ConversationLogger
 from .tokens import count_message_tokens
-from .tools import parse_tool_arguments, tool_schemas
+from .tools import tool_schemas
 
 
 @dataclass
@@ -27,9 +27,9 @@ class AgentSettings:
     indent_assistant: bool = True
     assistant_indent: str = "  "
     debug: bool = False
-    logger: Optional[ConversationLogger] = None
-    system_prompt: Optional[str] = None
-    append_system_prompt: Optional[str] = None
+    logger: ConversationLogger | None = None
+    system_prompt: str | None = None
+    append_system_prompt: str | None = None
 
 
 class DeepSeekAgent:
@@ -43,7 +43,7 @@ class DeepSeekAgent:
         if self.settings.append_system_prompt:
             prompt += f"\n\n{self.settings.append_system_prompt}"
 
-        self.messages: List[Dict[str, Any]] = [
+        self.messages: list[dict[str, Any]] = [
             {
                 "role": "system",
                 "content": prompt,
@@ -70,14 +70,14 @@ class DeepSeekAgent:
         prompt = self.settings.system_prompt or self._get_default_prompt()
         if self.settings.append_system_prompt:
             prompt += f"\n\n{self.settings.append_system_prompt}"
-            
+
         # Update the first message (system prompt)
         if self.messages and self.messages[0]["role"] == "system":
             self.messages[0]["content"] = prompt
         else:
             # Fallback if messages are empty or corrupted
             self.messages.insert(0, {"role": "system", "content": prompt})
-            
+
     def reset(self) -> None:
         self.messages = [self.messages[0]]
 
@@ -89,7 +89,7 @@ class DeepSeekAgent:
         except Exception as e:
             if self.settings.debug:
                 self.console.print(f"[dim red]Token count error: {e}[/]")
-        
+
         # FINAL SANITIZATION ONLY
         self._ensure_valid_conversation()
 
@@ -97,13 +97,13 @@ class DeepSeekAgent:
         """Brutally validate and fix conversation structure."""
         if not self.messages:
             return
-            
+
         valid_messages = [self.messages[0]]  # Always keep system
-        
+
         for i in range(1, len(self.messages)):
             msg = self.messages[i]
             role = msg.get("role")
-            
+
             if role == "tool":
                 # Tool message MUST follow an Assistant message with tool_calls
                 prev = valid_messages[-1]
@@ -122,11 +122,11 @@ class DeepSeekAgent:
                     # Found an assistant call not followed by a tool.
                     # We drop the PREVIOUS assistant message.
                     if self.settings.debug:
-                        self.console.print(f"[dim yellow]Dropping hanging assistant call[/]")
+                        self.console.print("[dim yellow]Dropping hanging assistant call[/]")
                     valid_messages.pop()
-                    
+
                 valid_messages.append(msg)
-        
+
         # Final check: If the last message is Assistant with tool_calls, it's hanging.
         if valid_messages:
             last = valid_messages[-1]
@@ -141,7 +141,7 @@ class DeepSeekAgent:
         if self.settings.logger:
             self.settings.logger.write(payload)
 
-    def _request_payload(self, use_tools: bool, allowed_tools: set[str] | None) -> Dict[str, Any]:
+    def _request_payload(self, use_tools: bool, allowed_tools: set[str] | None) -> dict[str, Any]:
         payload = {
             "model": self.settings.model,
             "messages": self.messages,
@@ -155,13 +155,13 @@ class DeepSeekAgent:
     def call_model(
         self,
         use_tools: bool = True,
-        on_stream_start: Optional[callable] = None,
+        on_stream_start: callable | None = None,
         allowed_tools: set[str] | None = None,
-        stop_event: Optional[threading.Event] = None,
-    ) -> Tuple[str, List[Dict[str, Any]]]:
+        stop_event: threading.Event | None = None,
+    ) -> tuple[str, list[dict[str, Any]]]:
         # Debug context size for the user
         self.console.print(f"[dim]Context: {len(self.messages)} messages[/]")
-        
+
         payload = self._request_payload(use_tools, allowed_tools)
         headers = {
             "Authorization": f"Bearer {self.settings.api_key}",
@@ -184,15 +184,14 @@ class DeepSeekAgent:
         self,
         client: httpx.Client,
         url: str,
-        headers: Dict[str, str],
-        payload: Dict[str, Any],
-        on_stream_start: Optional[callable],
-        stop_event: Optional[threading.Event] = None,
-    ) -> Tuple[str, List[Dict[str, Any]]]:
-        content_chunks: List[str] = []
-        reasoning_chunks: List[str] = []
+        headers: dict[str, str],
+        payload: dict[str, Any],
+        on_stream_start: callable | None,
+        stop_event: threading.Event | None = None,
+    ) -> tuple[str, list[dict[str, Any]]]:
+        content_chunks: list[str] = []
         buffer = ""
-        tool_calls: Dict[int, Dict[str, Any]] = {}
+        tool_calls: dict[int, dict[str, Any]] = {}
         started = False
         self._at_line_start = True
 
@@ -203,7 +202,7 @@ class DeepSeekAgent:
                     break
                 if not line:
                     continue
-                
+
                 if line.startswith("data: "):
                     data = line[len("data: ") :]
                 else:
@@ -214,9 +213,9 @@ class DeepSeekAgent:
                     payload = json.loads(data)
                 except json.JSONDecodeError:
                     continue
-                
+
                 delta = payload["choices"][0].get("delta", {})
-                
+
                 # Handle regular content
                 if "content" in delta and delta["content"]:
                     if not started and on_stream_start:
@@ -228,7 +227,7 @@ class DeepSeekAgent:
                         self.console.print(text, end="", style="white")
                     else:
                         buffer = self._emit_streamed_text(buffer, text)
-            
+
                 # Handle tool calls
                 if "tool_calls" in delta:
                     if not started and on_stream_start:
@@ -251,16 +250,16 @@ class DeepSeekAgent:
                             entry["function"]["name"] = func["name"]
                         if func.get("arguments"):
                             entry["function"]["arguments"] += func["arguments"]
-                
+
                 # Debug usage info
                 if payload.get("usage") and self.settings.debug:
                     self.console.print("\n[bold cyan]debug[/] usage:", payload["usage"])
-    
+
         if buffer and self.settings.stream_word_delay_ms > 0:
             self._emit_remaining_text(buffer)
         if content_chunks:
             self.console.print("")
-    
+
         tool_call_list = [tool_calls[idx] for idx in sorted(tool_calls.keys())]
         return "".join(content_chunks), tool_call_list
 
@@ -268,9 +267,9 @@ class DeepSeekAgent:
         self,
         client: httpx.Client,
         url: str,
-        headers: Dict[str, str],
-        payload: Dict[str, Any],
-    ) -> Tuple[str, List[Dict[str, Any]]]:
+        headers: dict[str, str],
+        payload: dict[str, Any],
+    ) -> tuple[str, list[dict[str, Any]]]:
         payload = dict(payload)
         payload["stream"] = False
         response = client.post(url, headers=headers, json=payload)
@@ -312,14 +311,14 @@ class DeepSeekAgent:
         self.trim_messages()
         self._log(msg)
 
-    def append_assistant_with_tools(self, content: str, tool_calls: List[Dict[str, Any]]) -> None:
+    def append_assistant_with_tools(self, content: str, tool_calls: list[dict[str, Any]]) -> None:
         msg = {"role": "assistant", "content": content, "tool_calls": tool_calls}
-        
+
         # For deepseek-reasoner model, we must include reasoning_content
         # even if empty, when there are tool calls
         if "reasoner" in self.settings.model.lower() and tool_calls:
             msg["reasoning_content"] = ""
-        
+
         self.messages.append(msg)
         self.trim_messages()
         self._log(msg)

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List
+
 from pydantic import BaseModel, Field
+
 
 class PlannerOutput(BaseModel):
     intent: str = Field(..., pattern=r"^(bugfix|feature|refactor|explain)$")
