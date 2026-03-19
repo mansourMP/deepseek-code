@@ -1,32 +1,31 @@
-# DS Code Agent
+# DS Code Agent (Unofficial)
 
 > **Disclaimer:** This is an independent open-source project and is not affiliated with, endorsed by, or sponsored by DeepSeek-AI. References to DeepSeek refer only to compatibility, inspiration, or intended model usage.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-brightgreen.svg)](https://www.python.org/downloads/)
+[![Unofficial](https://img.shields.io/badge/Project-Unofficial-orange.svg)](https://github.com/your-username/ds-code-agent)
 
-**DS Code Agent** is an independent, terminal-based AI coding assistant designed to work with DeepSeek-compatible models. It provides a professional, Codex-like experience directly in your terminal for users who prefer DeepSeek API models.
+**DS Code Agent** is an independent, terminal-based coding assistant designed for use with DeepSeek-compatible models. It provides a professional, Codex-like environment optimized for high-performance AI coding workflows.
 
 ---
 
 ## ✨ Features
 
-- **Autonomous Coding:** A ReAct-based agent that can explore files, write code, and run shell commands.
+- **Autonomous Agent:** A ReAct-based coding engine that can explore directories, read/write files, and run shell commands.
 - **Advanced TUI:** A persistent, pinned bottom prompt with real-time status (Codex-style).
-- **Safe Sandboxing:** Comprehensive path validation and command denylists to protect your workspace.
-- **Multi-Step Orchestration:** A dedicated autonomous mode for complex, multi-file tasks.
-- **Themeable Interface:** Multiple professional color themes including Dracula, Nord, and GitHub Dark.
-- **Token Optimization:** Intelligent context management and real-time usage tracking.
+- **Safe Sandboxing:** Comprehensive path validation and command denylists to protect your local environment.
+- **Multi-Step Orchestration:** A dedicated autonomous mode for complex, multi-file engineering tasks.
+- **Context Optimization:** Intelligent token management and real-time usage tracking.
 
-## 🚀 Quick Start
+## 🚀 Installation & Usage
 
-### Installation
+### Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/mansourMP/deepseek-code.git
-cd deepseek-code
+git clone https://github.com/your-username/ds-code-agent.git
+cd ds-code-agent
 
 # Set up a virtual environment
 python -m venv .venv
@@ -45,30 +44,22 @@ DEEPSEEK_API_KEY=sk-your-key-here
 DEEPSEEK_MODEL=deepseek-chat
 ```
 
-### Usage
+### Quick Commands
 
-**Interactive Mode:**
-```bash
-ds-code-agent
-```
-
-**Autonomous Mode:**
-```bash
-ds-code-agent-auto "refactor the auth logic to use JWT"
-```
+- `deepseek`: Launch the interactive terminal assistant.
+- `deepseek-auto "goal"`: Run the autonomous orchestrator for multi-step goals.
+- `/help`: Show all available commands in the interactive session.
 
 ## 🛠 Project Structure
 
 ```
-deepseek-code/
+ds-code-agent/
 ├── src/deepseek_code/
-│   ├── cli.py           # Main CLI entry point
-│   ├── engine.py        # Core ReAct loop and tool orchestration
-│   ├── agent.py         # API-backed coding agent
-│   ├── tools.py         # Tool implementations
-│   ├── ui/              # User interface components (TUI, themes, panels)
-│   └── safety.py        # Security & sandboxing
-├── docs/                # Documentation and archive
+│   ├── cli.py           # CLI entry point
+│   ├── engine.py        # ReAct loop & tool orchestration
+│   ├── agent.py         # Model API client
+│   └── ui/              # TUI components & themes
+├── docs/                # Documentation & archive
 ├── tests/               # Comprehensive test suite
 ├── pyproject.toml
 └── README.md
@@ -76,7 +67,7 @@ deepseek-code/
 
 ## 🤝 Contributing
 
-Contributions are welcome. This is a community-maintained project for users of DeepSeek-compatible models. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. This project is maintained by the open-source community.
 
 ## 📄 License
 
@@ -85,5 +76,5 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  Built by the open-source community
+  Built by independent developers
 </p>

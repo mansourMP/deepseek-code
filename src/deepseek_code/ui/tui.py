@@ -48,10 +48,11 @@ class DeepSeekTUI:
 
         # UI Components
         self.output_field = TextArea(
-            text="Welcome to DS Code Agent\n",
+            text="Welcome to DS Code Agent\n(Independent Open Source Project)\n",
             read_only=True,
             scrollbar=True,
         )
+
         
         self.input_field = TextArea(
             height=1,
