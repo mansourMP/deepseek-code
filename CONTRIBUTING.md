@@ -1,6 +1,6 @@
-# Contributing to DeepSeek Code
+# Contributing to DS Code Agent
 
-Thank you for your interest in contributing to DeepSeek Code! We welcome contributions from the community to make this terminal coding agent even better.
+Thank you for your interest in contributing to DS Code Agent. We welcome community contributions to improve this independent terminal coding agent.
 
 ## How to Contribute
 

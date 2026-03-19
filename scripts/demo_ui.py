@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Visual UI Demo for DeepSeek Code
+Visual UI Demo for DS Code Agent
 
 Run this to see the beautiful UI in action!
 """
@@ -20,7 +20,7 @@ def demo_welcome():
     """Show welcome banner."""
     console.print()
     welcome = Panel(
-        "[bold cyan]DEEPSEEK CODE[/bold cyan]\n\n"
+        "[bold cyan]DS CODE AGENT[/bold cyan]\n\n"
         "Terminal Coding Agent\n"
         "[dim]v0.2.0[/dim]",
         box=box.DOUBLE,
@@ -225,7 +225,7 @@ def main():
     console.clear()
     
     console.print("\n[bold cyan]═══════════════════════════════════════════════════════════[/bold cyan]")
-    console.print("[bold cyan]         DeepSeek Code - Visual UI Demo                    [/bold cyan]")
+    console.print("[bold cyan]         DS Code Agent - Visual UI Demo                 [/bold cyan]")
     console.print("[bold cyan]═══════════════════════════════════════════════════════════[/bold cyan]\n")
     
     console.print("[bold]1. Welcome Banner[/bold]")
@@ -256,7 +256,7 @@ def main():
     demo_themes()
     
     console.print("[bold cyan]═══════════════════════════════════════════════════════════[/bold cyan]")
-    console.print("[bold green]✨ This is what DeepSeek Code looks like! ✨[/bold green]")
+    console.print("[bold green]✨ This is what DS Code Agent looks like! ✨[/bold green]")
     console.print("[bold cyan]═══════════════════════════════════════════════════════════[/bold cyan]\n")
 
 

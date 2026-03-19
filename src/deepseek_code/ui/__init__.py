@@ -1,4 +1,4 @@
-"""UI components for DeepSeek Code terminal interface."""
+"""UI components for DS Code Agent terminal interface."""
 
 from .animations import (
     DEEP_THINKING_MESSAGES,
@@ -84,4 +84,3 @@ __all__ = [
     "dispatch_command",
     "get_command_completions",
 ]
-

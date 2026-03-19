@@ -1,5 +1,5 @@
 """
-Session management for DeepSeek Code.
+Session management for DS Code Agent.
 
 Handles session state, backups, undo functionality, and persistence.
 """

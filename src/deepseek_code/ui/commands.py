@@ -1,5 +1,5 @@
 """
-Slash command handlers for DeepSeek Code.
+Slash command handlers for DS Code Agent.
 
 Extracts command logic from the main CLI for better organization
 and testability.
@@ -56,7 +56,7 @@ class CommandResult:
 
 COMMANDS: Dict[str, str] = {
     "/help": "Show available commands",
-    "/exit": "Exit DeepSeek Code",
+    "/exit": "Exit DS Code Agent",
     "/clear": "Clear conversation history",
     "/status": "Show session status",
     "/model": "Set model (/model <name>)",

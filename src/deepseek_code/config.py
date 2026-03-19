@@ -1,5 +1,5 @@
 """
-Configuration management for DeepSeek Code.
+Configuration management for DS Code Agent.
 
 Loads and manages configuration from .deepseek-code.json files
 with sensible defaults and validation.
@@ -16,7 +16,7 @@ from typing import Any, Dict, List, Optional
 @dataclass
 class Config:
     """
-    Configuration for DeepSeek Code.
+    Configuration for DS Code Agent.
     
     Loaded from .deepseek-code.json in the project root.
     All fields have sensible defaults for immediate use.
@@ -356,7 +356,7 @@ class Config:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 EXAMPLE_CONFIG = """{
-  "// DeepSeek Code Configuration": "https://github.com/deepseek/deepseek-code",
+  "// DS Code Agent Configuration": "https://github.com/mansourMP/deepseek-code",
   
   "// Approval & Safety": "",
   "approval_mode": "prompt",
@@ -388,4 +388,3 @@ def create_example_config(root: Path) -> Path:
     config_path = root / ".deepseek-code.json"
     config_path.write_text(EXAMPLE_CONFIG, encoding="utf-8")
     return config_path
-

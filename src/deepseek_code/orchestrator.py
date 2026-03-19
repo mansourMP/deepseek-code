@@ -1,7 +1,7 @@
-\"\"\"
-Autonomous multi-step task orchestrator for DeepSeek Code.
+"""
+Autonomous multi-step task orchestrator for DS Code Agent.
 Provides a higher-level planning and execution loop for complex goals.
-\"\"\"
+"""
 
 from __future__ import annotations
 

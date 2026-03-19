@@ -1,5 +1,5 @@
 """
-Terminal interface for DeepSeek Code.
+Terminal interface for DS Code Agent.
 Provides a rich interactive CLI with themes, commands, and tool execution.
 """
 
@@ -90,7 +90,7 @@ def main(
     mode: str | None,
     approve_reads: bool,
 ) -> None:
-    """DeepSeek Code - Intelligent Terminal Agent."""
+    """DS Code Agent - Independent terminal assistant for DeepSeek-compatible models."""
     console = Console(force_terminal=True)
     interrupted = threading.Event()
     _handle_interrupts(interrupted, console)

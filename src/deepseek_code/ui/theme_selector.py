@@ -1,5 +1,5 @@
 """
-Interactive theme selector for DeepSeek Code.
+Interactive theme selector for DS Code Agent.
 
 Provides a beautiful modal for selecting themes with live preview,
 similar to Claude Code's interface.

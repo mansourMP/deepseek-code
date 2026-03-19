@@ -1,5 +1,5 @@
 """
-Async TUI bridge for DeepSeek Code.
+Async TUI bridge for DS Code Agent.
 """
 
 from __future__ import annotations

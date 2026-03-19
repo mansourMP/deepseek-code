@@ -1,5 +1,5 @@
 """
-Animations and loading states for DeepSeek Code.
+Animations and loading states for DS Code Agent.
 
 Provides smooth, non-blocking visual feedback during AI thinking,
 tool execution, and other long-running operations.

@@ -1,5 +1,5 @@
 """
-Interactive model selector for DeepSeek Code.
+Interactive model selector for DS Code Agent.
 
 Provides a beautiful modal dialog for selecting models,
 similar to Gemini CLI's interface.

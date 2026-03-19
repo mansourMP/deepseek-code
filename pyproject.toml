@@ -3,14 +3,14 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "deepseek-code"
-version = "0.2.1"
-description = "Terminal coding agent powered by DeepSeek API"
+name = "ds-code-agent"
+version = "0.2.2"
+description = "An independent terminal coding agent for DeepSeek-compatible models"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
-authors = [{name = "DeepSeek Team", email = "code@deepseek.com"}]
-keywords = ["ai", "coding", "terminal", "agent", "deepseek", "llm"]
+authors = [{name = "DS Code Agent Contributors"}]
+keywords = ["ai", "coding", "terminal", "agent", "deepseek", "llm", "unofficial"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
@@ -50,13 +50,16 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/deepseek/deepseek-code"
-Documentation = "https://github.com/deepseek/deepseek-code#readme"
-Repository = "https://github.com/deepseek/deepseek-code.git"
-Issues = "https://github.com/deepseek/deepseek-code/issues"
-Changelog = "https://github.com/deepseek/deepseek-code/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/mansourMP/deepseek-code"
+Documentation = "https://github.com/mansourMP/deepseek-code#readme"
+Repository = "https://github.com/mansourMP/deepseek-code.git"
+Issues = "https://github.com/mansourMP/deepseek-code/issues"
+Changelog = "https://github.com/mansourMP/deepseek-code/blob/main/CHANGELOG.md"
 
 [project.scripts]
+ds-code-agent = "deepseek_code.cli:main"
+ds-code = "deepseek_code.cli:main"
+ds-code-agent-auto = "deepseek_code.orchestrator:main"
 deepseek = "deepseek_code.cli:main"
 deepseek-code = "deepseek_code.cli:main"
 deepseek-auto = "deepseek_code.orchestrator:main"
@@ -147,4 +150,3 @@ show_error_codes = true
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
-

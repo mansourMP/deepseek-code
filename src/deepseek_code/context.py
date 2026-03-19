@@ -1,5 +1,5 @@
 """
-Context file management for DeepSeek Code.
+Context file management for DS Code Agent.
 
 Supports hierarchical DEEPSEEK.md files for project-specific instructions:
 - ~/.deepseek/DEEPSEEK.md (global)
@@ -101,9 +101,9 @@ def create_example_context_file(path: Path) -> Path:
     """
     context_file = path / "DEEPSEEK.md"
 
-    example_content = """# DeepSeek Code Context
+    example_content = """# DS Code Agent Context
 
-This file provides context and instructions for the DeepSeek coding agent.
+This file provides context and instructions for the DS Code Agent coding assistant.
 It will be automatically loaded when working in this directory.
 
 ## Project Overview

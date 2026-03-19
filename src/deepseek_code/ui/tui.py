@@ -1,5 +1,5 @@
 """
-Advanced TUI layout for DeepSeek Code.
+Advanced TUI layout for DS Code Agent.
 Provides a pinned bottom prompt and status bar with a scrolling conversation area.
 """
 
@@ -48,7 +48,7 @@ class DeepSeekTUI:
 
         # UI Components
         self.output_field = TextArea(
-            text="Welcome to DeepSeek Code\n",
+            text="Welcome to DS Code Agent\n",
             read_only=True,
             scrollbar=True,
         )

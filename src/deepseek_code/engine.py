@@ -1,5 +1,5 @@
 """
-Core execution engine for DeepSeek Code.
+Core execution engine for DS Code Agent.
 Handles the ReAct loop, tool orchestration, and session state.
 """
 

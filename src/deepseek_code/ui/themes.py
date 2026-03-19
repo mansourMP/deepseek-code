@@ -1,5 +1,5 @@
 """
-Premium theming system for DeepSeek Code.
+Premium theming system for DS Code Agent.
 
 Provides customizable color schemes with predefined themes inspired
 by popular development environments.

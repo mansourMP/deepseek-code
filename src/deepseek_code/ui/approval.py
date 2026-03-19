@@ -1,5 +1,5 @@
 """
-Interactive approval dialog for DeepSeek Code.
+Interactive approval dialog for DS Code Agent.
 Provides a beautiful arrow-key navigation menu for tool approvals.
 """
 

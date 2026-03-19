@@ -1,5 +1,5 @@
 """
-Rich panel components for DeepSeek Code terminal interface.
+Rich panel components for DS Code Agent terminal interface.
 
 Provides beautiful, consistent panel rendering for diffs, shell output,
 status displays, and welcome banners.
@@ -266,7 +266,7 @@ def print_status_panel(
     session_id = getattr(console, "_session_id", "N/A")
 
     content = [
-        f"[bold {theme.primary}]DeepSeek Code[/] [dim]v{version}[/]",
+        f"[bold {theme.primary}]DS Code Agent[/] [dim]v{version}[/]",
         "",
         f"[{theme.dim}]Model:[/]       [bold]{model}[/]",
         f"[{theme.dim}]Directory:[/]   {root}",
@@ -307,11 +307,14 @@ def print_welcome_banner(
     # ASCII art logo (compact)
     logo = f"""[{theme.primary}]
     ╔══════════════════════════════════════════╗
-    ║  [bold]🚀 DeepSeek Code[/] [dim]v{version:<5}[/]             ║
-    ║  [dim]Terminal AI Coding Agent[/]              ║
+    ║  [bold]🚀 DS Code Agent[/] [dim]v{version:<5}[/]            ║
+    ║  [dim]Independent Open-Source Assistant[/]     ║
     ╚══════════════════════════════════════════╝[/]"""
 
     console.print(logo)
+    console.print(
+        f"  [{theme.dim}]This project is independent and not affiliated with DeepSeek-AI.[/]"
+    )
     console.print()
 
     # Compact info line

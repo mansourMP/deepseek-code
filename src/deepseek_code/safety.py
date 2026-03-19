@@ -1,5 +1,5 @@
 """
-Security and sandboxing for DeepSeek Code.
+Security and sandboxing for DS Code Agent.
 
 Provides comprehensive protection against:
 - Path traversal attacks

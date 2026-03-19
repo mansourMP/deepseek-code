@@ -1,5 +1,5 @@
 """
-Interactive approval mode selector for DeepSeek Code.
+Interactive approval mode selector for DS Code Agent.
 
 Provides a beautiful modal for selecting approval/mode settings,
 similar to Codex's interface.
