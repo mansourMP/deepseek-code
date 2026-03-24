@@ -1,73 +1,73 @@
-# DS Code Agent (Unofficial)
+# DeepSeek Code (DS-Code)
 
-> **Disclaimer:** This is an independent open-source project and is not affiliated with, endorsed by, or sponsored by DeepSeek-AI. References to DeepSeek refer only to compatibility, inspiration, or intended model usage.
+> **The High-Performance Engineering CLI for DeepSeek Models.**
+> *Independent open-source project. Not affiliated with DeepSeek-AI.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-brightgreen.svg)](https://www.python.org/downloads/)
-[![Unofficial](https://img.shields.io/badge/Project-Unofficial-orange.svg)](https://github.com/your-username/ds-code-agent)
+[![Unofficial](https://img.shields.io/badge/Project-Unofficial-orange.svg)](https://github.com/mansourMP/deepseek-code)
 
-**DS Code Agent** is an independent, terminal-based coding assistant designed for use with DeepSeek-compatible models. It provides a professional, Codex-like environment optimized for high-performance AI coding workflows.
+**DeepSeek Code** is a professional terminal-based coding assistant optimized for high-performance engineering workflows. It provides an autonomous, Codex-style environment for building, refactoring, and exploring complex codebases.
 
 ---
 
-## ✨ Features
+## ✨ Capabilities
 
-- **Autonomous Agent:** A ReAct-based coding engine that can explore directories, read/write files, and run shell commands.
-- **Advanced TUI:** A persistent, pinned bottom prompt with real-time status (Codex-style).
-- **Safe Sandboxing:** Comprehensive path validation and command denylists to protect your local environment.
-- **Multi-Step Orchestration:** A dedicated autonomous mode for complex, multi-file engineering tasks.
-- **Context Optimization:** Intelligent token management and real-time usage tracking.
+- **Autonomous Engineering:** A ReAct-based agent that orchestrates multi-file tasks, runs tests, and navigates directories.
+- **Professional TUI:** A persistent, high-density terminal interface with real-time status and context tracking.
+- **Local Integrity:** Built-in sandboxing with path validation and safe execution guards.
+- **Context Mastery:** Intelligent token management and optimized prompt engineering for DeepSeek-V3 and R1.
+- **Tool Integration:** Seamlessly reads, writes, and executes within your local development environment.
 
-## 🚀 Installation & Usage
+## 🚀 Getting Started
 
-### Setup
+### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/ds-code-agent.git
-cd ds-code-agent
+git clone https://github.com/mansourMP/deepseek-code.git
+cd deepseek-code
 
-# Set up a virtual environment
+# Set up environment
 python -m venv .venv
 source .venv/bin/activate
 
-# Install dependencies
+# Install in editable mode
 pip install -e .
 ```
 
 ### Configuration
 
-Create a `.env` file in the project root:
+Add your credentials to a `.env` file:
 
 ```bash
 DEEPSEEK_API_KEY=sk-your-key-here
 DEEPSEEK_MODEL=deepseek-chat
 ```
 
-### Quick Commands
+### CLI Usage
 
 - `deepseek`: Launch the interactive terminal assistant.
-- `deepseek-auto "goal"`: Run the autonomous orchestrator for multi-step goals.
-- `/help`: Show all available commands in the interactive session.
+- `deepseek-auto "your goal"`: Run the autonomous orchestrator for complex tasks.
+- `ds-code`: Alternative alias for the CLI.
 
-## 🛠 Project Structure
+## 🛠 Architecture
 
 ```
-ds-code-agent/
+deepseek-code/
 ├── src/deepseek_code/
-│   ├── cli.py           # CLI entry point
-│   ├── engine.py        # ReAct loop & tool orchestration
-│   ├── agent.py         # Model API client
-│   └── ui/              # TUI components & themes
-├── docs/                # Documentation & archive
-├── tests/               # Comprehensive test suite
-├── pyproject.toml
-└── README.md
+│   ├── cli.py           # CLI Entry point
+│   ├── engine.py        # ReAct loop & Tool orchestration
+│   ├── agent.py         # LLM Client integration
+│   └── ui/              # TUI, Themes, and Animations
+├── docs/                # Technical documentation
+├── tests/               # Suite of comprehensive tests
+└── pyproject.toml       # Build & Dependency configuration
 ```
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. This project is maintained by the open-source community.
+We welcome contributions! Please refer to [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 📄 License
 
@@ -76,5 +76,5 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  Built by independent developers
+  Built for engineers, by the open-source community.
 </p>
