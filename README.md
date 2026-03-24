@@ -3,6 +3,20 @@
 > **The High-Performance Engineering CLI for DeepSeek Models.**
 > *Independent open-source project. Not affiliated with DeepSeek-AI.*
 
+---
+
+### ⚠️ Project Status Notice
+
+This project is currently in a **maintenance-only state**. 
+
+While the core functionality is robust, full-scale engine engineering reached its limits as further optimization requires deep internal architectural access to DeepSeek's proprietary infrastructure. Consequently, active development has been paused.
+
+**Free to Use & Open to Feedback:**
+- This tool remains **free to use** and open-source.
+- If you find it useful, encounter errors, or have recommendations for improvements, please **open an issue** or submit a pull request!
+
+---
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-brightgreen.svg)](https://www.python.org/downloads/)
 [![Unofficial](https://img.shields.io/badge/Project-Unofficial-orange.svg)](https://github.com/mansourMP/deepseek-code)
